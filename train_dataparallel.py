@@ -28,7 +28,7 @@ def train():
     # dataset
     gpu_number = torch.cuda.device_count()
     n_classes = 19
-    n_img_all_gpu = 16*gpu_number
+    n_img_all_gpu = 16 * gpu_number
     cropsize = [448, 448]
     data_root = '/home/data2/DATASET/CelebAMask-HQ/'
 
