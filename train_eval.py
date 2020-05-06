@@ -58,6 +58,9 @@ def save_checkpoint(model, name):
 
 def train(opt):
     opt.saved_path = opt.saved_path + 'CelebAMask'
+    opt.opt_path = opt.log_path + 'CelebAMask'+'tensorboard'
+    os.makedirs(opt.log_path, exist_ok=True)
+    os.makedirs(opt.saved_path, exist_ok=True)
     # dataset
     gpu_number = torch.cuda.device_count()
     n_classes = 19
@@ -86,7 +89,7 @@ def train(opt):
         if opt.load_weights.endswith('.pth'):
             weights_path = opt.load_weights
         else:
-            weights_path = get_last_weights(opt.saved_parse)
+            weights_path = get_last_weights(opt.saved_path)
         try:
             # ??
             last_step = int(os.path.basename(weights_path).split('_')[-1].split('.')[0])
@@ -175,10 +178,11 @@ def train(opt):
                     loss_avg.append(loss.item())
                     #  print training log message
                     progress_bar.set_description(
-                        'Step: {}. Epoch: {}/{}. Iteration: {}/{}. '
-                        'p_loss: {:.5f}. 2_loss: {:.5f}. 3_loss: {:.5f}. 4 loss_avg: {:.5f}'.format(
+                        'Step: {}. Epoch: {}/{}. Iteration: {}/{}. p_loss: {:.5f}. 2_loss: {:.5f}.'.format(
                             step, epoch, opt.num_epochs, iter + 1, max_iter, lossp.item(),
-                            loss2.item(), loss3.item(), loss.item()))
+                            loss2.item()))
+                    progress_bar.set_description('2_loss: {:.5f}. 3_loss: {:.5f}. loss_avg: {:.5f}'.format(
+                        loss2.item(), loss3.item(), loss.item()))
                     writer.add_scalars('Lossp', {'train': lossp}, step)
                     writer.add_scalars('loss2', {'train': loss2}, step)
                     writer.add_scalars('loss3', {'train': loss3}, step)
@@ -190,7 +194,7 @@ def train(opt):
                     step += 1
 
                     if step % opt.save_interval == 0 and step > 0:
-                        save_checkpoint(net, f'bisenet_{epoch}_{step}.pth')
+                        save_checkpoint(net, f'Bisenet_{epoch}_{step}.pth')
                         print('checkpoint...')
 
                 except Exception as e:
