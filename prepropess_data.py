@@ -13,13 +13,16 @@ from PIL import Image
 face_data = '/home/data2/DATASET/CelebAMask-HQ/CelebA-HQ-img'
 face_sep_mask = '/home/data2/DATASET/CelebAMask-HQ/CelebAMask-HQ-mask-anno'
 mask_path = '/home/data2/DATASET/CelebAMask-HQ/mask'
+
 counter = 0
 total = 0
 for i in range(15):
 
-    atts = ['skin', 'l_brow', 'r_brow', 'l_eye', 'r_eye', 'eye_g', 'l_ear', 'r_ear', 'ear_r',
-            'nose', 'mouth', 'u_lip', 'l_lip', 'neck', 'neck_l', 'cloth', 'hair', 'hat']
+    # atts = ['skin', 'l_brow', 'r_brow', 'l_eye', 'r_eye', 'eye_g', 'l_ear', 'r_ear', 'ear_r',
+    #         'nose', 'mouth', 'u_lip', 'l_lip', 'neck', 'neck_l', 'cloth', 'hair', 'hat']
 
+    atts = ['skin', 'l_brow', 'r_brow', 'l_eye', 'r_eye', 'nose', 'l_lip', 'inner_mouth', 'u_lip',
+            'hair', 'l_eye_shadow', 'r_eye_shadow', 'l_ear', 'r_ear', 'hat', 'glasses']
     for j in range(i * 2000, (i + 1) * 2000):
 
         mask = np.zeros((512, 512))

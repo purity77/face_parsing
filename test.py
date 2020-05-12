@@ -79,12 +79,7 @@ def evaluate(respth='./res/test_res', dspth='./data', cp='model_final_diss.pth')
             vis_parsing_maps(image, parsing, stride=1, save_im=True, save_path=osp.join(respth, image_path))
 
 
-
-
-
-
-
 if __name__ == "__main__":
-    evaluate(dspth='/home/zll/data/CelebAMask-HQ/test-img', cp='79999_iter.pth')
+    evaluate(dspth='/home/data2/DATASET/test_set_a/test_set_a/jpg/0a051ae923b45edbb22af3d2e05365ee', cp='Bisenet_13_11600.pth')
 
 

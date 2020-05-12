@@ -23,7 +23,7 @@ class FaceMask(Dataset):
         self.ignore_lb = 255
         self.rootpth = rootpth
 
-        self.imgs = os.listdir(os.path.join(self.rootpth, 'CelebA-HQ-img'))
+        self.imgs = os.listdir(os.path.join(self.rootpth, 'jpg1'))
 
         #  pre-processing
         self.to_tensor = transforms.Compose([
@@ -42,9 +42,9 @@ class FaceMask(Dataset):
 
     def __getitem__(self, idx):
         impth = self.imgs[idx]
-        img = Image.open(osp.join(self.rootpth, 'CelebA-HQ-img', impth))
+        img = Image.open(osp.join(self.rootpth, 'jpg1', impth))
         img = img.resize((512, 512), Image.BILINEAR)
-        label = Image.open(osp.join(self.rootpth, 'mask', impth[:-3] + 'png')).convert('P')
+        label = Image.open(osp.join(self.rootpth, 'mask1', impth[:-3] + 'png')).convert('P')
         # print(np.unique(np.array(label)))
         if self.mode == 'train':
             im_lb = dict(im=img, lb=label)
