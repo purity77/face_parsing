@@ -17,7 +17,6 @@ import os
 import datetime
 import argparse
 
-os.environ["CUDA_VISIBLE_DEVICES"] = '2, 3, 4'
 
 
 def get_args():
@@ -57,17 +56,22 @@ def save_checkpoint(model, name):
 
 
 def train(opt):
+    # saving setting
     opt.saved_path = opt.saved_path + 'CelebAMask'
-    opt.opt_path = opt.log_path + 'CelebAMask'+'tensorboard'
+    opt.log_path = opt.log_path + 'CelebAMask'+'tensorboard'
     os.makedirs(opt.log_path, exist_ok=True)
     os.makedirs(opt.saved_path, exist_ok=True)
-    # dataset
+
+   # gpu setting
+    os.environ["CUDA_VISIBLE_DEVICES"] = '2, 3, 4'
     gpu_number = torch.cuda.device_count()
+
+    # dataset setting
     n_classes = 19
     n_img_all_gpu = opt.batch_size * gpu_number
     cropsize = [448, 448]
     data_root = '/home/data2/DATASET/CelebAMask-HQ/'
-    num_workers = 8
+    num_workers = opt.num_workers
 
     ds = FaceMask(data_root, cropsize=cropsize, mode='train')
     dl = DataLoader(ds,
@@ -91,7 +95,6 @@ def train(opt):
         else:
             weights_path = get_last_weights(opt.saved_path)
         try:
-            # ??
             last_step = int(os.path.basename(weights_path).split('_')[-1].split('.')[0])
         except:
             last_step = 0

@@ -42,8 +42,11 @@ class FaceMask(Dataset):
 
     def __getitem__(self, idx):
         impth = self.imgs[idx]
+        # img = Image.open(osp.join(self.rootpth, 'CelebA-HQ-img', self.mode, impth))
         img = Image.open(osp.join(self.rootpth, 'CelebA-HQ-img', impth))
         img = img.resize((512, 512), Image.BILINEAR)
+        # convert('P') p 将‘RGB’24bit模式转换为[0,255]8bit的彩色版索引图像
+        # label = Image.open(osp.join(self.rootpth, 'mask', self.mode, impth[:-3] + 'png')).convert('P')
         label = Image.open(osp.join(self.rootpth, 'mask', impth[:-3] + 'png')).convert('P')
         # print(np.unique(np.array(label)))
         if self.mode == 'train':
@@ -52,7 +55,7 @@ class FaceMask(Dataset):
             img, label = im_lb['im'], im_lb['lb']
         img = self.to_tensor(img)
         label = np.array(label).astype(np.int64)[np.newaxis, :]
-        sample = {'img': img, 'label': label}
+        sample = {'img': img, 'label': label, 'impth': impth}
         return sample
 
     def __len__(self):

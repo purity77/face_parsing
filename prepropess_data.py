@@ -7,9 +7,7 @@ import cv2
 from transform import *
 from PIL import Image
 
-# face_data = '/home/zll/data/CelebAMask-HQ/CelebA-HQ-img'
-# face_sep_mask = '/home/zll/data/CelebAMask-HQ/CelebAMask-HQ-mask-anno'
-# mask_path = '/home/zll/data/CelebAMask-HQ/mask'
+
 face_data = '/home/data2/DATASET/CelebAMask-HQ/CelebA-HQ-img'
 face_sep_mask = '/home/data2/DATASET/CelebAMask-HQ/CelebAMask-HQ-mask-anno'
 mask_path = '/home/data2/DATASET/CelebAMask-HQ/mask'
@@ -19,6 +17,7 @@ for i in range(15):
 
     atts = ['skin', 'l_brow', 'r_brow', 'l_eye', 'r_eye', 'eye_g', 'l_ear', 'r_ear', 'ear_r',
             'nose', 'mouth', 'u_lip', 'l_lip', 'neck', 'neck_l', 'cloth', 'hair', 'hat']
+
 
     for j in range(i * 2000, (i + 1) * 2000):
 
