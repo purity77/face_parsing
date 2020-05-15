@@ -23,7 +23,7 @@ class FaceMask(Dataset):
         self.ignore_lb = 255
         self.rootpth = rootpth
 
-        self.imgs = os.listdir(os.path.join(self.rootpth, 'CelebA-HQ-img'))
+        self.imgs = os.listdir(os.path.join(self.rootpth, 'jpg1'))
 
         #  pre-processing
         self.to_tensor = transforms.Compose([
@@ -48,6 +48,7 @@ class FaceMask(Dataset):
         # convert('P') p 将‘RGB’24bit模式转换为[0,255]8bit的彩色版索引图像
         # label = Image.open(osp.join(self.rootpth, 'mask', self.mode, impth[:-3] + 'png')).convert('P')
         label = Image.open(osp.join(self.rootpth, 'mask', impth[:-3] + 'png')).convert('P')
+
         # print(np.unique(np.array(label)))
         if self.mode == 'train':
             im_lb = dict(im=img, lb=label)

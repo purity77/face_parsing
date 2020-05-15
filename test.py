@@ -156,14 +156,10 @@ def evaluate(respth='./logs/CelebAMask', dspth='./data', cp='model_final_diss.pt
             vis_parsing_maps(image, parsing, stride=1, save_im=True, save_path=osp.join(respth, image_path))
 
 
-
-
-
-
-
 if __name__ == "__main__":
     os.environ['CUDA_VISIBLE_DEVICES']= '8'
     # evaluate(dspth='/home/data2/DATASET/CelebAMask-HQ/CelebA-HQ-img', cp='Bisenet_13_11600.pth')
     testval(model_path='/home/data2/miles/face_parsing/logs/CelebAMask/Bisenet_13_11600.pth')
+
 
 

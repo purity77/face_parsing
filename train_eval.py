@@ -17,6 +17,10 @@ import os
 import datetime
 import argparse
 
+<<<<<<< HEAD
+=======
+os.environ["CUDA_VISIBLE_DEVICES"] = '3,5,6'
+>>>>>>> 164ca1a055d206b0840f58fc20dd6bd93e94c315
 
 
 def get_args():
@@ -66,12 +70,16 @@ def train(opt):
     os.environ["CUDA_VISIBLE_DEVICES"] = '2, 3, 4'
     gpu_number = torch.cuda.device_count()
 
-    # dataset setting
-    n_classes = 19
+    # n_classes = 19
+    n_classes = 16
     n_img_all_gpu = opt.batch_size * gpu_number
     cropsize = [448, 448]
-    data_root = '/home/data2/DATASET/CelebAMask-HQ/'
-    num_workers = opt.num_workers
+    # data_root = '/home/data2/DATASET/CelebAMask-HQ/'
+    data_root = '/home/data2/DATASET/vschallenge/train/'
+
+    num_workers = 8
+
+
 
     ds = FaceMask(data_root, cropsize=cropsize, mode='train')
     dl = DataLoader(ds,
