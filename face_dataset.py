@@ -23,7 +23,7 @@ class FaceMask(Dataset):
         self.ignore_lb = 255
         self.rootpth = rootpth
 
-        self.imgs = os.listdir(os.path.join(self.rootpth, 'jpg1'))
+        self.imgs = os.listdir(os.path.join(self.rootpth, self.mode, 'jpg1'))
 
         #  pre-processing
         self.to_tensor = transforms.Compose([
@@ -40,19 +40,30 @@ class FaceMask(Dataset):
             RandomCrop(cropsize)
         ])
 
+        self.trans_val = Compose([
+            RandomCrop(cropsize)
+        ])
+
+
+
     def __getitem__(self, idx):
         impth = self.imgs[idx]
         # img = Image.open(osp.join(self.rootpth, 'CelebA-HQ-img', self.mode, impth))
-        img = Image.open(osp.join(self.rootpth, 'CelebA-HQ-img', impth))
-        img = img.resize((512, 512), Image.BILINEAR)
+        img = Image.open(osp.join(self.rootpth, self.mode, 'jpg1', impth))
         # convert('P') p 将‘RGB’24bit模式转换为[0,255]8bit的彩色版索引图像
-        # label = Image.open(osp.join(self.rootpth, 'mask', self.mode, impth[:-3] + 'png')).convert('P')
-        label = Image.open(osp.join(self.rootpth, 'mask', impth[:-3] + 'png')).convert('P')
+        label = Image.open(osp.join(self.rootpth, self.mode, 'mask1', impth[:-3] + 'png')).convert('P')
+        # 同时下采样
+        img = img.resize((512, 512), Image.BILINEAR)
+        label = label.resize((512, 512), Image.NEAREST)
 
         # print(np.unique(np.array(label)))
         if self.mode == 'train':
             im_lb = dict(im=img, lb=label)
             im_lb = self.trans_train(im_lb)
+            img, label = im_lb['im'], im_lb['lb']
+        if self.mode == 'val':
+            im_lb = dict(im=img, lb=label)
+            im_lb = self.trans_val(im_lb)
             img, label = im_lb['im'], im_lb['lb']
         img = self.to_tensor(img)
         label = np.array(label).astype(np.int64)[np.newaxis, :]

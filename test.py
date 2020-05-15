@@ -65,12 +65,12 @@ def vis_parsing_maps(im, parsing_anno, stride, save_im=False, save_path='vis_res
 
 
 def testval(model_path, sv_dir='res', sv_pred=False):
-    n_classes = 19
+    n_classes = 17
     confusion_matrix = np.zeros((n_classes, n_classes)) # num_classes x num_classes
     cropsize = [448, 448]
-    data_root = '/home/data2/DATASET/CelebAMask-HQ/'
-    batch_size = 4
-    ds = FaceMask(data_root, cropsize=cropsize, mode='test')
+    data_root = '/home/data2/DATASET/vschallenge'
+    batch_size = 12
+    ds = FaceMask(data_root, cropsize=cropsize, mode='val')
     dl = DataLoader(ds,
                     batch_size=batch_size,
                     shuffle=False,
@@ -93,8 +93,8 @@ def testval(model_path, sv_dir='res', sv_pred=False):
             size = lb.size()
             pred = out.cpu().numpy().argmax(1)
             gt = lb.cpu().numpy()
-            vis_parsing_maps(im.cpu(), pred, stride=1, save_im=True, save_path='res', imspth=impth)
-            vis_parsing_maps(im.cpu(), gt, stride=1, save_im=True, save_path='res_gt', imspth=impth)
+            # vis_parsing_maps(im.cpu(), pred, stride=1, save_im=True, save_path='res', imspth=impth)
+            # vis_parsing_maps(im.cpu(), gt, stride=1, save_im=True, save_path='res_gt', imspth=impth)
             confusion_matrix += get_confusion_matrix(lb, out, size, n_classes, ignore=-1)  # [16, 19, 448, 448]
 
             if sv_pred:
@@ -156,10 +156,14 @@ def evaluate(respth='./logs/CelebAMask', dspth='./data', cp='model_final_diss.pt
             vis_parsing_maps(image, parsing, stride=1, save_im=True, save_path=osp.join(respth, image_path))
 
 
+
+
+
+
+
 if __name__ == "__main__":
     os.environ['CUDA_VISIBLE_DEVICES']= '8'
     # evaluate(dspth='/home/data2/DATASET/CelebAMask-HQ/CelebA-HQ-img', cp='Bisenet_13_11600.pth')
-    testval(model_path='/home/data2/miles/face_parsing/logs/CelebAMask/Bisenet_13_11600.pth')
-
+    testval(model_path='/home/data2/miles/face_parsing/logs/vschallenges/Bisenet_0_381.pth')
 
 

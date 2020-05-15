@@ -17,15 +17,10 @@ import os
 import datetime
 import argparse
 
-<<<<<<< HEAD
-=======
-os.environ["CUDA_VISIBLE_DEVICES"] = '3,5,6'
->>>>>>> 164ca1a055d206b0840f58fc20dd6bd93e94c315
-
 
 def get_args():
     parser = argparse.ArgumentParser('face parsing by - miles')
-    parser.add_argument('-p', '--project', type=str, default='flickr27', help='project file that contains parameters')
+    parser.add_argument('-p', '--project', type=str, default='vschallenges', help='datasets name')
     parser.add_argument('-n', '--num_workers', type=int, default=12, help='num_workers of dataloader')
     parser.add_argument('--batch_size', type=int, default=12, help='The number of images per batch among all devices')
     parser.add_argument('--head_only', type=bool, default=False,
@@ -61,37 +56,35 @@ def save_checkpoint(model, name):
 
 def train(opt):
     # saving setting
-    opt.saved_path = opt.saved_path + 'CelebAMask'
-    opt.log_path = opt.log_path + 'CelebAMask'+'tensorboard'
+    opt.saved_path = opt.saved_path + opt.project
+    opt.log_path = os.path.join(opt.saved_path, 'tensorboard')
     os.makedirs(opt.log_path, exist_ok=True)
     os.makedirs(opt.saved_path, exist_ok=True)
 
-   # gpu setting
-    os.environ["CUDA_VISIBLE_DEVICES"] = '2, 3, 4'
+    # gpu setting
+    os.environ["CUDA_VISIBLE_DEVICES"] = '2, 3, 4, 5, 6'
     gpu_number = torch.cuda.device_count()
 
-    # n_classes = 19
-    n_classes = 16
+    # dataset setting
+    n_classes = 17
     n_img_all_gpu = opt.batch_size * gpu_number
     cropsize = [448, 448]
-    # data_root = '/home/data2/DATASET/CelebAMask-HQ/'
-    data_root = '/home/data2/DATASET/vschallenge/train/'
-
-    num_workers = 8
-
-
+    data_root = '/home/data2/DATASET/vschallenge'
+    num_workers = opt.num_workers
 
     ds = FaceMask(data_root, cropsize=cropsize, mode='train')
     dl = DataLoader(ds,
                     batch_size=n_img_all_gpu,
                     shuffle=True,
-                    num_workers=num_workers
+                    num_workers=num_workers,
+                    drop_last=True
                     )
     ds_eval = FaceMask(data_root, cropsize=cropsize, mode='val')
     dl_eval = DataLoader(ds_eval,
                          batch_size=n_img_all_gpu,
                          shuffle=True,
-                         num_workers=num_workers
+                         num_workers=num_workers,
+                         drop_last=True
                          )
 
     ignore_idx = -100
@@ -126,7 +119,7 @@ def train(opt):
     net = nn.DataParallel(net)
 
     score_thres = 0.7
-    n_min = n_img_all_gpu * cropsize[0] * cropsize[1] // opt.batch_size  # ??
+    n_min = n_img_all_gpu * cropsize[0] * cropsize[1] // opt.batch_size
     LossP = OhemCELoss(thresh=score_thres, n_min=n_min, ignore_lb=ignore_idx)
     Loss2 = OhemCELoss(thresh=score_thres, n_min=n_min, ignore_lb=ignore_idx)
     Loss3 = OhemCELoss(thresh=score_thres, n_min=n_min, ignore_lb=ignore_idx)
@@ -188,12 +181,13 @@ def train(opt):
                     optim.step()
                     loss_avg.append(loss.item())
                     #  print training log message
-                    progress_bar.set_description(
-                        'Step: {}. Epoch: {}/{}. Iteration: {}/{}. p_loss: {:.5f}. 2_loss: {:.5f}.'.format(
-                            step, epoch, opt.num_epochs, iter + 1, max_iter, lossp.item(),
-                            loss2.item()))
-                    progress_bar.set_description('2_loss: {:.5f}. 3_loss: {:.5f}. loss_avg: {:.5f}'.format(
-                        loss2.item(), loss3.item(), loss.item()))
+                    # progress_bar.set_description(
+                    #     'Epoch: {}/{}. Iteration: {}/{}. p_loss: {:.5f}. 2_loss: {:.5f}. 3_loss: {:.5f}. loss_avg: {:.5f}'.format(
+                    #         epoch, opt.num_epochs, iter + 1, max_iter, lossp.item(),
+                    #         loss2.item(), loss3.item(), loss.item()))
+                    print('p_loss: {:.5f}. 2_loss: {:.5f}. 3_loss: {:.5f}. loss_avg: {:.5f}'.format(
+                            lossp.item(), loss2.item(), loss3.item(), loss.item()))
+
                     writer.add_scalars('Lossp', {'train': lossp}, step)
                     writer.add_scalars('loss2', {'train': loss2}, step)
                     writer.add_scalars('loss3', {'train': loss3}, step)
