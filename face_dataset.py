@@ -44,8 +44,6 @@ class FaceMask(Dataset):
             RandomCrop(cropsize)
         ])
 
-
-
     def __getitem__(self, idx):
         impth = self.imgs[idx]
         # img = Image.open(osp.join(self.rootpth, 'CelebA-HQ-img', self.mode, impth))

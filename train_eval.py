@@ -241,7 +241,7 @@ def train(opt):
                 writer.add_scalars('Total_loss', {'val': loss}, step)
                 writer.add_scalars('p_loss', {'val': lossp}, step)
                 writer.add_scalars('2_loss', {'val': loss2}, step)
-                writer.add_scalars('2_loss', {'val': loss3}, step)
+                writer.add_scalars('3_loss', {'val': loss3}, step)
 
                 if loss + opt.es_min_delta < best_loss:
                     best_loss = loss

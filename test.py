@@ -8,7 +8,7 @@ import torch
 import os
 from utils.utils import *
 from torch.utils.data import DataLoader
-from face_dataset import FaceMask
+from face_dataset_test import FaceMask
 import os.path as osp
 import numpy as np
 from PIL import Image
@@ -29,6 +29,7 @@ def vis_parsing_maps(im, parsing_anno, stride, save_im=False, save_path='vis_res
                    [0, 255, 255], [85, 255, 255], [170, 255, 255]]
     ims = np.array(im)
     # 逆归一化
+    batch_size = ims.shape[0]
     mean = np.tile(np.array([[0.485, 0.456, 0.406]]), [ims.shape[0], 1])
     std = np.tile(np.array([[0.229, 0.224, 0.225]]), [ims.shape[0], 1])
     mean = np.reshape(mean, newshape=[ims.shape[0], 3, 1, 1])  # 扩充维度以触发广播机制
@@ -39,7 +40,7 @@ def vis_parsing_maps(im, parsing_anno, stride, save_im=False, save_path='vis_res
     vis_ims = ims.copy().astype(np.uint8)
     vis_parsing_annos = parsing_anno.copy().astype(np.uint8)
 
-    for i in range(vis_parsing_annos.shape[0]):
+    for i in range(ims.shape[0]):
         vis_parsing_anno = cv2.resize(vis_parsing_annos[i], None, fx=stride, fy=stride, interpolation=cv2.INTER_NEAREST)
         vis_parsing_anno_color = np.zeros((vis_parsing_anno.shape[0], vis_parsing_anno.shape[1], 3)) + 255
 
@@ -69,7 +70,7 @@ def testval(model_path, sv_dir='res', sv_pred=False):
     confusion_matrix = np.zeros((n_classes, n_classes)) # num_classes x num_classes
     cropsize = [448, 448]
     data_root = '/home/data2/DATASET/vschallenge'
-    batch_size = 12
+    batch_size = 1
     ds = FaceMask(data_root, cropsize=cropsize, mode='val')
     dl = DataLoader(ds,
                     batch_size=batch_size,
@@ -93,7 +94,7 @@ def testval(model_path, sv_dir='res', sv_pred=False):
             size = lb.size()
             pred = out.cpu().numpy().argmax(1)
             gt = lb.cpu().numpy()
-            # vis_parsing_maps(im.cpu(), pred, stride=1, save_im=True, save_path='res', imspth=impth)
+            vis_parsing_maps(im.cpu(), pred, stride=1, save_im=True, save_path='res', imspth=impth)
             # vis_parsing_maps(im.cpu(), gt, stride=1, save_im=True, save_path='res_gt', imspth=impth)
             confusion_matrix += get_confusion_matrix(lb, out, size, n_classes, ignore=-1)  # [16, 19, 448, 448]
 
@@ -164,6 +165,6 @@ def evaluate(respth='./logs/CelebAMask', dspth='./data', cp='model_final_diss.pt
 if __name__ == "__main__":
     os.environ['CUDA_VISIBLE_DEVICES']= '8'
     # evaluate(dspth='/home/data2/DATASET/CelebAMask-HQ/CelebA-HQ-img', cp='Bisenet_13_11600.pth')
-    testval(model_path='/home/data2/miles/face_parsing/logs/vschallenges/Bisenet_0_381.pth')
+    testval(model_path='/home/data2/miles/face_parsing/logs/vschallenges/Bisenet_49_11400.pth')
 
 

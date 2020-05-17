@@ -105,6 +105,7 @@ venv.bak/
 
 # res
 res/
+res_gt/
 
 .idea/
 # weights
