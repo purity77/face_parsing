@@ -16,8 +16,12 @@ counter = 0
 total = 0
 for i in range(15):
 
-    atts = ['skin', 'l_brow', 'r_brow', 'l_eye', 'r_eye', 'eye_g', 'l_ear', 'r_ear', 'ear_r',
-             'nose', 'mouth', 'u_lip', 'l_lip', 'neck', 'neck_l', 'cloth', 'hair', 'hat']
+    # atts = ['skin', 'l_brow', 'r_brow', 'l_eye', 'r_eye', 'eye_g', 'l_ear', 'r_ear', 'ear_r',
+    #          'nose', 'mouth', 'u_lip', 'l_lip', 'neck', 'neck_l', 'cloth', 'hair', 'hat']
+
+    atts = ['skin', 'l_brow', 'r_brow', 'l_eye', 'r_eye', 'nose', 'l_lip', 'inner_mouse', 'u_lip',
+            'hair', 'l_eye_shadow', 'r_eye_shadow', 'l_ear', 'r_ear', 'hat', 'glasses', 'background']
+
 
     for j in range(i * 2000, (i + 1) * 2000):
 

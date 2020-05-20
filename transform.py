@@ -46,13 +46,17 @@ class HorizontalFlip(object):
             # atts = [1 'skin', 2 'l_brow', 3 'r_brow', 4 'l_eye', 5 'r_eye', 6 'eye_g', 7 'l_ear', 8 'r_ear', 9 'ear_r',
             #         10 'nose', 11 'mouth', 12 'u_lip', 13 'l_lip', 14 'neck', 15 'neck_l', 16 'cloth', 17 'hair', 18 'hat']
 
+            # atts = [1 'skin', 2 'l_brow', 3 'r_brow', 4 'l_eye', 5 'r_eye', 6 'nose', 7 'l_lip', 8 'inner_mouse', 9 'u_lip',
+            #         10 'hair', 11 'l_eye_shadow', 12 'r_eye_shadow', 13 'l_ear', 14 'r_ear', 15 'hat', 16 'glasses', 17 'background']
             flip_lb = np.array(lb)
             flip_lb[lb == 2] = 3
             flip_lb[lb == 3] = 2
             flip_lb[lb == 4] = 5
             flip_lb[lb == 5] = 4
-            flip_lb[lb == 7] = 8
-            flip_lb[lb == 8] = 7
+            flip_lb[lb == 11] = 12
+            flip_lb[lb == 12] = 11
+            flip_lb[lb == 13] = 14
+            flip_lb[lb == 14] = 13
             flip_lb = Image.fromarray(flip_lb)
             return dict(im = im.transpose(Image.FLIP_LEFT_RIGHT),
                         lb = flip_lb.transpose(Image.FLIP_LEFT_RIGHT),

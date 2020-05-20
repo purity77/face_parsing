@@ -56,11 +56,11 @@ def vis_parsing_maps(im, parsing_anno, stride, save_im=False, save_path='vis_res
 
         # Save result or not
         if save_im:
-            sv_path = os.path.join('/home/data2/miles/face_parsing', save_path)
+            sv_path = os.path.join('/home/data2/DATASET/test_set_a/test_set_a/', save_path)
             if not os.path.exists(sv_path):
                 os.makedirs(sv_path)
             cv2.imwrite(os.path.join(sv_path, imspth[i]), vis_parsing_anno)
-            cv2.imwrite(os.path.join(sv_path, 'color_'+imspth[i]), vis_im, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
+            # cv2.imwrite(os.path.join(sv_path, 'color_'+imspth[i]), vis_im, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
 
         # return vis_im
 
@@ -71,7 +71,7 @@ def testval(model_path, sv_dir='res', sv_pred=False):
     cropsize = [448, 448]
     data_root = '/home/data2/DATASET/vschallenge'
     batch_size = 1
-    ds = FaceMask(data_root, cropsize=cropsize, mode='val')
+    ds = FaceMask(data_root, cropsize=cropsize, mode='test')
     dl = DataLoader(ds,
                     batch_size=batch_size,
                     shuffle=False,
@@ -85,18 +85,18 @@ def testval(model_path, sv_dir='res', sv_pred=False):
         net.eval()
         for iter, data in enumerate(dl):
             im = data['img']
-            lb = data['label']
+            # lb = data['label']
             impth = data['impth']
-            lb = torch.squeeze(lb, 1)
+            # lb = torch.squeeze(lb, 1)
             im = im.cuda()
-            lb = lb.cuda()
+            # lb = lb.cuda()
             out = net(im)[0]
-            size = lb.size()
+            # size = lb.size()
             pred = out.cpu().numpy().argmax(1)
-            gt = lb.cpu().numpy()
-            vis_parsing_maps(im.cpu(), pred, stride=1, save_im=True, save_path='res', imspth=impth)
+            # gt = lb.cpu().numpy()
+            vis_parsing_maps(im.cpu(), pred, stride=1, save_im=True, save_path='mask', imspth=impth)
             # vis_parsing_maps(im.cpu(), gt, stride=1, save_im=True, save_path='res_gt', imspth=impth)
-            confusion_matrix += get_confusion_matrix(lb, out, size, n_classes, ignore=-1)  # [16, 19, 448, 448]
+            # confusion_matrix += get_confusion_matrix(lb, out, size, n_classes, ignore=-1)  # [16, 19, 448, 448]
 
             if sv_pred:
                 sv_path = os.path.join(sv_dir, 'test_results')
@@ -104,26 +104,26 @@ def testval(model_path, sv_dir='res', sv_pred=False):
                     os.mkdir(sv_path)
                 # cv2.imwrite(sv_path+'/', ) add imname
 
-            if iter % 5 == 0:
-                pos = confusion_matrix.sum(1)
-                res = confusion_matrix.sum(0)
-                tp = np.diag(confusion_matrix)
-                pixel_acc = tp.sum() / pos.sum()
-                mean_acc = (tp / np.maximum(1.0, pos)).mean()
-                IoU_array = (tp / np.maximum(1.0, pos + res - tp))
-                mean_IoU = IoU_array.mean()
-                print('index/allimg {}/{}. mean_IoU: {:1.5f}. pixel_acc: {:1.5f}. mean_acc: {:1.5f}.'.format(
-                        iter*batch_size, len(dl)*batch_size, mean_IoU, pixel_acc, mean_acc))
-        pos = confusion_matrix.sum(1)
-        res = confusion_matrix.sum(0)
-        tp = np.diag(confusion_matrix)
-        pixel_acc = tp.sum() / pos.sum()
-        mean_acc = (tp / np.maximum(1.0, pos)).mean()
-        IoU_array = (tp / np.maximum(1.0, pos + res - tp))
-        mean_IoU = IoU_array.mean()
-        print('mean_IoU: {:1.5f}. pixel_acc: {:1.5f}. mean_acc: {:1.5f}.'.format(
-               mean_IoU,  pixel_acc, mean_acc))
-        return mean_IoU, IoU_array, pixel_acc, mean_acc
+        #     if iter % 5 == 0:
+        #         pos = confusion_matrix.sum(1)
+        #         res = confusion_matrix.sum(0)
+        #         tp = np.diag(confusion_matrix)
+        #         pixel_acc = tp.sum() / pos.sum()
+        #         mean_acc = (tp / np.maximum(1.0, pos)).mean()
+        #         IoU_array = (tp / np.maximum(1.0, pos + res - tp))
+        #         mean_IoU = IoU_array.mean()
+        #         print('index/allimg {}/{}. mean_IoU: {:1.5f}. pixel_acc: {:1.5f}. mean_acc: {:1.5f}.'.format(
+        #                 iter*batch_size, len(dl)*batch_size, mean_IoU, pixel_acc, mean_acc))
+        # pos = confusion_matrix.sum(1)
+        # res = confusion_matrix.sum(0)
+        # tp = np.diag(confusion_matrix)
+        # pixel_acc = tp.sum() / pos.sum()
+        # mean_acc = (tp / np.maximum(1.0, pos)).mean()
+        # IoU_array = (tp / np.maximum(1.0, pos + res - tp))
+        # mean_IoU = IoU_array.mean()
+        # print('mean_IoU: {:1.5f}. pixel_acc: {:1.5f}. mean_acc: {:1.5f}.'.format(
+        #        mean_IoU,  pixel_acc, mean_acc))
+        # return mean_IoU, IoU_array, pixel_acc, mean_acc
 
 
 def evaluate(respth='./logs/CelebAMask', dspth='./data', cp='model_final_diss.pth'):
@@ -163,8 +163,8 @@ def evaluate(respth='./logs/CelebAMask', dspth='./data', cp='model_final_diss.pt
 
 
 if __name__ == "__main__":
-    os.environ['CUDA_VISIBLE_DEVICES']= '8'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '8'
     # evaluate(dspth='/home/data2/DATASET/CelebAMask-HQ/CelebA-HQ-img', cp='Bisenet_13_11600.pth')
-    testval(model_path='/home/data2/miles/face_parsing/logs/vschallenges/Bisenet_49_11400.pth')
+    testval(model_path='/home/data2/zhy/face_parsing/logs/vschallenges/Bisenet_99_22800.pth')
 
 
